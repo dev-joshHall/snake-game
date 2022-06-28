@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import Sketch from "react-p5";
 
 const SnakeCanvas = (props) => {
+  var bgImg;
+
   var snake = {
     pieces: [
       { x: 20, y: 0 },
@@ -55,11 +57,11 @@ const SnakeCanvas = (props) => {
   const setup = (p5, canvasParentRef) => {
     p5.createCanvas(400, 400).parent(canvasParentRef);
     p5.frameRate(5);
+    bgImg = p5.loadImage(require("./leaves.png"));
   };
 
   useEffect(() => {
     const keyDownHandler = (event) => {
-      console.log(`User pressed: ${event.key}`);
       if (event.key === "ArrowLeft" && snake.xvel !== 20) {
         snake.xvel = -20;
         snake.yvel = 0;
@@ -81,11 +83,12 @@ const SnakeCanvas = (props) => {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-  }, []);
+  });
 
   const draw = (p5) => {
-    p5.background(220);
+    p5.background(bgImg);
     if (checkWallCollide() || checkSelfCollide()) {
+      p5.fill(255); // change text color to white
       p5.text("Game Over", 130, 180);
       p5.text("Score: " + snake.score, 145, 210);
       return false;
@@ -98,6 +101,8 @@ const SnakeCanvas = (props) => {
       snake.score++;
       changeFood();
     }
+
+    p5.fill(0, 200, 50); // change text color to white
     // draw the snake using position
     for (const section of snake.pieces) {
       p5.rect(section.x, section.y, 20, 20);
@@ -110,6 +115,7 @@ const SnakeCanvas = (props) => {
 
     p5.rect(food.x, food.y, 20, 20);
 
+    p5.fill(255);
     p5.text("Score: " + snake.score, 10, 20);
     p5.textSize(25);
   };
